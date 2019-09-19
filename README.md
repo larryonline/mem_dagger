@@ -2,8 +2,11 @@
 
 ADB 数据拉取及辅助诊断工具
 
-## 使用方式
-1. 在`Bash`中执行 `./mmonitor ${进程特征}` 会生成一个 `${包名}-${日期}` 的目录
+## 使用方式 (Only for mac)
+1. 在`Bash`中执行 `./dagger ${进程特征}` 会生成一个 `${包名}-${日期}` 的目录
+  * 例子: 我想检查一个包名为 "me.zhennan.Example1" 的应用. 我使用以下任意方式执行 `dagger`
+      * `./dagger Example1`
+      * `./dagger me.zhennan.Example1`
 
 2. 通过检查目录中的各个文件来分析当前的内存占用情况
 
