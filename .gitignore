@@ -1,0 +1,3 @@
+*.log
+*.hprof
+.DS_Store
