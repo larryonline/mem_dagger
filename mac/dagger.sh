@@ -1,21 +1,24 @@
 #!/usr/bin/env bash
 
-# MMonitor is for Memory leak detection.
+# for Memory leak detection.
 
 
 TODAY="$(date +%Y%m%d)"
 NOW="$(date +%H%M%S)"
+
+
 ROOT=$(cd "$(dirname "$0")";pwd);
 
 # include utility functions
 source $ROOT/utils.sh
 
-# adb should installed already
+# CHECK: adb should installed already
 if ! [ -x "$(command -v adb)" ]; then
   echo "The adb not exist. please install it firstly." >&2
   exit 1
 fi
 
+# CHECK: adb devices should connected already
 if ! [ -n "$(adb devices | grep device)" ]; then
   echo "Device not exist. please connect to HU." >&2
   exit 1
@@ -24,12 +27,10 @@ fi
 # hprof-conv should installed already
 if ! [ -x "$(command -v hprof-conv)" ]; then
   echo "The hprof-conv not exist. please install it firstly." >&2
+  exit 1
 fi
 
-
-# TODO-CHECK: adb devices should connected already
 PS_ROW="$(adb shell ps -ef | grep $1 | grep -v grep)"
-
 if [ -z "$PS_ROW" ]; then
   echo "Process not exist. please run it firstly."
   exit 1
@@ -39,7 +40,7 @@ fi
 # Find PID for given package
 echo $(adb shell ps -ef | grep $1 | grep -v grep)
 PID=$(adb shell ps -ef | grep $1 | grep -v grep | awk '{print $2}')
-PKG=$(adb shell ps -ef | grep $1 | grep -v grep | awk '{print $8}')
+PKG=$(adb shell ps -ef | grep $1 | grep -v grep | awk '{print $8}' | tr -d '\r')
 echo "PID: $PID, PKG: $PKG";
 
 
@@ -83,7 +84,6 @@ fi
 
 
 if [ -n "$(adb shell command -v am)" ]; then
-
   echo "Retrieve hprof"
   adb shell "am dumpheap $PID $TEMP_HPROF"
   wait4HProf
