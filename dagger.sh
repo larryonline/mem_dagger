@@ -2,9 +2,13 @@
 
 # MMonitor is for Memory leak detection.
 
+
 TODAY="$(date +%Y%m%d)"
 NOW="$(date +%H%M%S)"
 ROOT=$(cd "$(dirname "$0")";pwd);
+
+# include utility functions
+source $ROOT/utils.sh
 
 # adb should installed already
 if ! [ -x "$(command -v adb)" ]; then
@@ -76,33 +80,6 @@ if [ -n "$(adb shell command -v dumpsys)" ]; then
   adb pull $TEMP_MEMINFO_PKG $DIST_MEMINFO_PKG
   adb shell "rm -rf $TEMP_MEMINFO_ALL $TEMP_MEMINFO_PKG"
 fi
-
-
-
-wait4HProf() {
-  # wait for file to stabalize at a size above 0
-  local lastSize=0
-  local matchCount=0
-  while [ ${matchCount} -lt 3 ] ;
-  do
-      if [[ ${lastSize} -gt 0 && $(hprofSize) = ${lastSize} ]] ;
-          then
-          let "matchCount+=1"
-          echo "match ${matchCount}"
-      else
-          matchCount=0
-          lastSize=$(hprofSize)
-          echo "Dumping file...current size = ${lastSize}"
-      fi
-      sleep 0.5
-  done
-  echo "Heap Dump Complete, file size = ${lastSize}"
-}
-
-hprofSize() {
-  local size=$(echo $(adb shell "ls -s $TEMP_HPROF") | cut -f1 -d' ')
-  echo $size
-}
 
 
 if [ -n "$(adb shell command -v am)" ]; then
